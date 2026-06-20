@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapSense</title>
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <aside class="hero-sidebar">
+            <div class="sidebar-sticky">
+                <div class="brand-header">
+                    <div class="logo">SnapSense</div>
+                </div>
+                
+                <div class="hero-content">
+                    <h1>Maksimalkan Potensi<br>Setiap Gambar</h1>
+                    <p>Kompres gambar lebih efisien, analisis wajah lebih akurat. Semua dalam satu tempat.</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card nav-item active" data-target="compression">
+                            <div class="icon">1</div>
+                            <h3>Optimasi<br>Gambar</h3>
+                        </div>
+                        <div class="feature-card nav-item" data-target="similarity">
+                            <div class="icon">2</div>
+                            <h3>Pencocokan<br>Wajah</h3>
+                        </div>
+                        <div class="feature-card nav-item" data-target="comingsoon">
+                            <div class="icon">3</div>
+                            <h3>Segera<br>Hadir</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="sidebar-footer">
+                    <a href="{{ url_for('contact') }}">Hubungi Kami</a>
+                    <a href="https://instagram.com/zurykami_" target="_blank">Media Sosial</a>
+                    <a href="{{ url_for('about') }}">Alamat</a> <a href="{{ url_for('privacy') }}">Privasi & Ketentuan</a>
+                </footer>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            
+            <section class="section app-section active" id="compression">
+                <h2>Perkecil Ukuran, Pertahankan Kualitas</h2>
+                <p class="section-desc">Optimalkan ukuran gambar dalam hitungan detik tanpa mengorbankan kualitas visual.</p>
+                
+                <form id="compression-form">
+                    <div class="upload-zone" id="dropzone-compress">
+                        <p id="compress-filename">Tarik dan lepas gambar di sini atau klik untuk mengunggah</p>
+                        <input type="file" name="image" id="file-compress" accept=".jpg, .jpeg, .png" hidden required>
+                        <button type="button" class="btn-secondary mt-2" onclick="document.getElementById('file-compress').click()">Pilih Gambar</button>
+                    </div>
+                    
+                    <div class="slider-container" style="margin: 20px 0;">
+                        <label for="comp-slider">Tingkat Kompresi (Komponen: <span id="comp-val">100</span>)</label>
+                        <input type="range" id="comp-slider" min="5" max="150" value="50" style="width:100%;">
+                    </div>
+
+                    <button type="submit" class="btn-primary w-100" id="btn-compress">Mulai Optimasi</button>
+                </form>
+
+                <div id="compression-result" class="result-container" style="display: none;"></div>
+
+                <div class="info-boxes mt-4">
+                    <div class="info-box">Gambar diproses tanpa dibagikan ke pihak lain.</div>
+                    <div class="info-box">Hasil diproses dalam hitungan detik.</div>
+                </div>
+            </section>
+
+            <section class="section app-section" id="similarity">
+                <h2>Analisis Kemiripan Wajah</h2>
+                <p class="section-desc">Analisis kemiripan wajah dengan cepat menggunakan teknologi pengolahan citra.</p>
+                
+                <form id="similarity-form">
+                    <div class="comparison-grid">
+                        
+                        <div class="comp-card">
+                            <label>Foto Pertama</label>
+                            <img id="preview-baby" src="#" alt="Preview" style="display:none; margin-bottom:15px;">
+                            <input type="file" name="baby" id="file-baby" accept=".jpg, .jpeg, .png" required>
+                        </div>
+                        
+                        <div class="comp-card">
+                            <label>Foto Kedua</label>
+                            <img id="preview-adult" src="#" alt="Preview" style="display:none; margin-bottom:15px;">
+                            <input type="file" name="adult" id="file-adult" accept=".jpg, .jpeg, .png" required>
+                        </div>
+                        
+                    </div>
+                    <button type="submit" class="btn-primary w-100 mt-3" id="btn-similarity">Mulai Analisis</button>
+                </form>
+
+                <div id="similarity-result" class="result-container" style="display: none;"></div>
+            </section>
+
+            <section class="section app-section" id="comingsoon">
+                <h2>Sedang Dikembangkan</h2>
+                <p class="section-desc">Fitur baru untuk meningkatkan pengalaman analisis gambar sedang kami bangun.</p>
+                <div class="age-banner-wrapper">
+                    <div class="age-overlay text-center mt-3">
+                        <p>Nantikan pembaruan terbaru dari kami.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="main-footer">
+                <div class="footer-logo">SnapSense</div>
+                <div class="footer-content">
+                    <p>&copy; 2026 SnapSense Inc. All rights reserved.</p>
+                    <div class="footer-links">
+                        <p>Universitas Negeri Semarang | UNNES | Indonesia</p>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

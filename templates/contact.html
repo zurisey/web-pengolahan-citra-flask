@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak & Alamat - SnapSense</title>
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/icon.jpeg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RESET & UTILITIES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1e293b; overflow-x: hidden; }
+        img { max-width: 100%; height: auto; display: block; }
+        .w-100 { width: 100%; }
+        .mt-2 { margin-top: 10px; }
+        .mt-3 { margin-top: 15px; }
+        .mt-4 { margin-top: 20px; }
+        .text-center { text-align: center; }
+
+        /* BUTTONS */
+        .btn-primary { background-color: #669899; color: #ffffff; border: none; padding: 12px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: background 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-primary:hover { background-color: #4d7374; }
+
+        /* LAYOUT & SIDEBAR */
+        .main-container { display: flex; flex-direction: column; }
+        .hero-sidebar { background-color: #669899; color: #ffffff; padding: 30px; width: 100%; }
+        .sidebar-sticky { display: flex; flex-direction: column; gap: 40px; }
+        .brand-header { display: flex; justify-content: space-between; align-items: center; }
+        .brand-header .logo { font-size: 1.5rem; font-weight: 700; }
+        .brand-header .logo a { color: #ffffff; text-decoration: none; }
+        .hero-content h1 { font-size: 2.2rem; line-height: 1.2; margin-bottom: 15px; font-weight: 600; }
+        .hero-content p { color: #e6f2f2; font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; }
+
+        /* FEATURE CARDS / MINI NAVIGATION */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .feature-card { background-color: #558283; padding: 20px 10px; border-radius: 8px; text-align: center; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: 2px solid transparent; }
+        .feature-card:hover { transform: translateY(-2px); background-color: #3d5e5f; }
+        .feature-card h3 { font-size: 0.75rem; font-weight: 600; color: #ffffff; }
+
+        .sidebar-footer { display: flex; gap: 15px; font-size: 0.8rem; }
+        .sidebar-footer a { color: #e6f2f2; text-decoration: none; opacity: 0.85; }
+        .sidebar-footer a:hover { opacity: 1; text-decoration: underline; }
+
+        /* CONTENT AREA */
+        .content-area { padding: 30px 20px; max-width: 800px; margin: 0 auto; width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* CARD SYSTEM FOR CONTENT */
+        .info-card { 
+            background-color: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 12px; 
+            padding: 30px 25px; 
+            margin-bottom: 20px; 
+        }
+        .info-card h2 { font-size: 1.3rem; font-weight: 600; color: #1e293b; margin-bottom: 12px; margin-top: 20px; border-left: 4px solid #669899; padding-left: 10px; }
+        .info-card h2:first-of-type { margin-top: 0; }
+        .info-card p { color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 12px; }
+        .info-card ul { list-style-position: inside; color: #475569; font-size: 0.95rem; margin-top: 8px; }
+        .info-card li { margin-bottom: 6px; }
+        .info-card a { color: #669899; text-decoration: none; font-weight: 600; }
+        .info-card a:hover { text-decoration: underline; }
+
+        /* FOOTER */
+        .main-footer { padding: 15px 0 0 0; margin-top: auto; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.85rem; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .footer-logo { font-weight: bolder;

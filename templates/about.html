@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang - SnapSense</title>
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/icon.jpeg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RESET & UTILITIES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1e293b; overflow-x: hidden; }
+        img { max-width: 100%; height: auto; display: block; }
+        .w-100 { width: 100%; }
+        .mt-2 { margin-top: 10px; }
+        .mt-3 { margin-top: 15px; }
+        .mt-4 { margin-top: 20px; }
+        .text-center { text-align: center; }
+
+        /* BUTTONS */
+        .btn-primary { background-color: #669899; color: #ffffff; border: none; padding: 12px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: background 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-primary:hover { background-color: #4d7374; }
+
+        /* LAYOUT & SIDEBAR */
+        .main-container { display: flex; flex-direction: column; }
+        .hero-sidebar { background-color: #669899; color: #ffffff; padding: 30px; width: 100%; }
+        .sidebar-sticky { display: flex; flex-direction: column; gap: 40px; }
+        .brand-header { display: flex; justify-content: space-between; align-items: center; }
+        .brand-header .logo { font-size: 1.5rem; font-weight: 700; }
+        .brand-header .logo a { color: #ffffff; text-decoration: none; }
+        .hero-content h1 { font-size: 2.2rem; line-height: 1.2; margin-bottom: 15px; font-weight: 600; }
+        .hero-content p { color: #e6f2f2; font-size: 0.95rem; line-height: 1.5; margin-bottom: 30px; }
+
+        /* FEATURE CARDS / MINI NAVIGATION */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .feature-card { background-color: #558283; padding: 20px 10px; border-radius: 8px; text-align: center; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: 2px solid transparent; }
+        .feature-card:hover { transform: translateY(-2px); background-color: #3d5e5f; }
+        .feature-card.active { border-color: #ffffff; background-color: #3d5e5f; }
+        .feature-card h3 { font-size: 0.75rem; font-weight: 600; color: #ffffff; }
+
+        .sidebar-footer { display: flex; gap: 15px; font-size: 0.8rem; }
+        .sidebar-footer a { color: #e6f2f2; text-decoration: none; opacity: 0.85; }
+        .sidebar-footer a:hover { opacity: 1; text-decoration: underline; }
+
+        /* CONTENT AREA */
+        .content-area { padding: 30px 20px; max-width: 800px; margin: 0 auto; width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* ABOUT CARD CONTENT */
+        .about-card { 
+            background-color: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 12px; 
+            padding: 35px 30px; 
+            margin-bottom: 25px; 
+        }
+        .about-card h2 { font-size: 1.4rem; font-weight: 600; color: #1e293b; margin-top: 25px; margin-bottom: 10px; border-left: 4px solid #669899; padding-left: 10px; }
+        .about-card h2:first-of-type { margin-top: 0; }
+        .about-card p { color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px; text-align: justify; }
+
+        /* TECH BADGES */
+        .tech-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .badge { background-color: #e2e8f0; color: #1e293b; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+        /* FOOTER */
+        .main-footer { padding: 15px 0 0 0; margin-top: auto; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.85rem; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .footer-logo { font-weight: bolder; color: #669899; }
+
+        /* RESPONSIVE */
+        @media (min-width: 1024px) {
+            .main-container { flex-direction: row; min-height: 100vh; }
+            .hero-sidebar { width: 35%; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; padding: 45px; }
+            .content-area { margin-left: 35%; width: 65%; max-width: 900px; padding: 60px 50px; }
+        }
+        @media (max-width: 600px) {
+            .footer-content { flex-direction: column; gap: 10px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <aside class="hero-sidebar">
+            <div class="sidebar-sticky">
+                
+                <div class="brand-header">
+                    <div class="logo"><a href="{{ url_for('index') }}">SnapSense</a></div>
+                </div>
+
+                <div class="hero-content">
+                    <h1>Tentang Aplikasi</h1>
+                    <p>Kenali lebih dalam teknologi di balik sistem pengolahan citra digital SnapSense dalam menangani kompresi dan analisis kemiripan wajah.</p>
+                    
+                    <div class="features-grid">
+                        <a href="{{ url_for('index') }}" class="feature-card">
+                            <h3>Beranda</h3>
+                        </a>
+                        <a href="{{ url_for('contact') }}" class="feature-card">
+                            <h3>Kontak</h3>
+                        </a>
+                        <a href="{{ url_for('privacy') }}" class="feature-card">
+                            <h3>Privasi</h3>
+                        </a>
+                    </div>
+                </div>
+
+                <footer class="sidebar-footer">
+                    <a href="{{ url_for('contact') }}">Hubungi Kami</a>
+                    <a href="https://instagram.com/username_anda" target="_blank">Media Sosial</a>
+                    <a href="{{ url_for('about') }}" style="text-decoration: underline; opacity: 1;">Alamat</a>
+                    <a href="{{ url_for('privacy') }}">Privasi & Ketentuan</a>
+                </footer>
+
+            </div>
+        </aside>
+
+        <main class="content-area">
+            
+            <div style="margin-bottom: 20px;">
+                <a href="{{ url_for('index') }}" class="btn-primary">&larr; Kembali ke Beranda</a>
+            </div>
+
+            <div class="about-card">
+                <p><strong>SnapSense</strong> adalah aplikasi berbasis web cerdas yang dirancang untuk memenuhi kebutuhan pengolahan citra digital modern secara efisien dan cepat.</p>
+                
+                <h2>Tujuan Aplikasi</h2>
+                <p>Aplikasi ini dibangun untuk membantu pengguna mengompresi ukuran file gambar menggunakan metode Principal Component Analysis (PCA) berbasis Singular Value Decomposition (SVD) guna menghemat ruang penyimpanan tanpa merusak kualitas visual inti gambar. Selain itu, SnapSense menyediakan fitur analisis kecocokan wajah untuk mengukur derajat kemiripan fitur struktural wajah antara dua citra digital.</p>
+                
+                <h2>Teknologi Pengolahan Citra</h2>
+                <p>Melalui integrasi pustaka Python tingkat tinggi, SnapSense mampu memberikan metrik evaluasi yang akurat secara langsung dan transparan.</p>
+                
+                <div class="tech-badges">
+                    <span class="badge">NumPy</span>
+                    <span class="badge">Pillow (PIL)</span>
+                    <span class="badge">Scikit-Image</span>
+                    <span class="badge">MSE & PSNR</span>
+                    <span class="badge">SSIM Index</span>
+                </div>
+            </div>
+
+            <footer class="main-footer">
+                <div class="footer-content">
+                    <div class="footer-text">
+                        <span class="footer-logo">SnapSense</span> 
+                        &copy; 2026 SnapSense Inc. All rights reserved.
+                    </div>
+                    <div class="footer-institution">
+                        Universitas Negeri Semarang | UNNES | Indonesia
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
