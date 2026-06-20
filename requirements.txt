@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-
-=======
 Flask
 gunicorn
 numpy
 Pillow
 scikit-learn
 scikit-image
-opencv-python-headless
->>>>>>> e0c80a5 (Rapikan struktur proyek dan sinkronisasi awal)
+opencv-python-headles
