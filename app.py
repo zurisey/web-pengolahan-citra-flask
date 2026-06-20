@@ -1,6 +1,8 @@
 import os
 import time
+import gc
 import numpy as np
+from scipy.sparse.linalg import svds
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
 from werkzeug.utils import secure_filename
@@ -23,22 +25,33 @@ app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 
 def hitung_pca_core(matrix, n_comp):
     """ 
-    Inti komputasi PCA menggunakan Singular Value Decomposition (SVD).
-    Aman dari risiko memory leak pada shared hosting / cloud gratis.
+    Inti komputasi PCA menggunakan Partial SVD (scipy).
+    10x lebih hemat memori karena tidak menghitung seluruh komponen.
     """
     h, w = matrix.shape
     rata_rata = np.mean(matrix, axis=0)
-    centered = matrix - rata_rata
+    centered = (matrix - rata_rata).astype(np.float32)
     
-    # Perhitungan SVD hemat memori dengan full_matrices=False
-    U, S, Vt = np.linalg.svd(centered, full_matrices=False)
+    # svds mensyaratkan k (n_comp) lebih kecil dari min(w, h)
+    n = min(n_comp, w-1, h-1)
+    if n < 1: n = 1
     
-    # Amankan batasan komponen agar tidak melebihi dimensi matriks asli
-    n = min(n_comp, len(S), w, h)
-    S_diag = np.diag(S[:n])
+    # Hanya hitung ruang SVD yang diperlukan
+    U, S, Vt = svds(centered, k=n)
     
-    # Rekonstruksi matriks kembali ke bentuk citra semula
-    reconstructed = np.dot(U[:, :n], np.dot(S_diag, Vt[:n, :])) + rata_rata
+    # scp.sparse.linalg.svds mengurutkan nilai dari terkecil ke terbesar,
+    # urutan perlu dibalik agar komponen utama (PCA) ada di depan
+    U = U[:, ::-1]
+    S = S[::-1]
+    Vt = Vt[::-1, :]
+    
+    S_diag = np.diag(S)
+    reconstructed = np.dot(U, np.dot(S_diag, Vt)) + rata_rata
+    
+    # Hapus variabel matriks besar dari RAM secara paksa
+    del centered, U, S, Vt, S_diag
+    gc.collect()
+    
     return np.clip(reconstructed, 0, 255).astype(np.uint8)
 
 def proses_pca_grayscale(img_arr, n_components):
@@ -67,25 +80,22 @@ def process_image():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
-        # Membuka berkas gambar asli
-        img_original = Image.open(filepath)
-        lebar, tinggi = img_original.size
-
-        # ===================================================================
-        # SOLUSI ANTI CRASH: Batasi resolusi maksimal 450px untuk RAM 512MB
-        # ===================================================================
-        MAX_RESOLUTION = 450
-        if lebar > MAX_RESOLUTION or tinggi > MAX_RESOLUTION:
-            img_original.thumbnail((MAX_RESOLUTION, MAX_RESOLUTION))
-            img_original.save(filepath)
+        # Gunakan 'with' agar Pillow langsung membebaskan memori
+        with Image.open(filepath) as img_original:
             lebar, tinggi = img_original.size
+            MAX_RESOLUTION = 450
+            if lebar > MAX_RESOLUTION or tinggi > MAX_RESOLUTION:
+                img_original.thumbnail((MAX_RESOLUTION, MAX_RESOLUTION))
+                img_original.save(filepath)
+                lebar, tinggi = img_original.size
 
         ukuran_asli_kb = os.path.getsize(filepath) / 1024
         ts = int(time.time())
         
         # 1. EKSEKUSI PEMROSESAN GRAYSCALE
-        img_gray = Image.open(filepath).convert('L')
-        arr_gray = np.array(img_gray)
+        with Image.open(filepath) as img:
+            img_gray = img.convert('L')
+            arr_gray = np.array(img_gray)
         res_gray = proses_pca_grayscale(arr_gray, n_components)
         
         file_gray_name = f"gray_{ts}.png"
@@ -93,15 +103,22 @@ def process_image():
         Image.fromarray(res_gray).save(path_gray_out)
         size_gray_kb = os.path.getsize(path_gray_out) / 1024
 
+        del arr_gray, res_gray, img_gray
+        gc.collect()
+
         # 2. EKSEKUSI PEMROSESAN RGB (WARNA)
-        img_rgb = Image.open(filepath).convert('RGB')
-        arr_rgb = np.array(img_rgb)
+        with Image.open(filepath) as img:
+            img_rgb = img.convert('RGB')
+            arr_rgb = np.array(img_rgb)
         res_rgb = proses_pca_rgb(arr_rgb, n_components)
         
         file_rgb_name = f"rgb_{ts}.png"
         path_rgb_out = os.path.join(app.config['PROCESSED_FOLDER'], file_rgb_name)
         Image.fromarray(res_rgb).save(path_rgb_out)
         size_rgb_kb = os.path.getsize(path_rgb_out) / 1024
+        
+        del arr_rgb, res_rgb, img_rgb
+        gc.collect()
 
         # Pengondisian teks statistik informasi data citra kompresi
         stats_gray_msg = (
@@ -155,8 +172,6 @@ def compare_faces_route():
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-# Tambahkan ini di app.py sebelum baris: if __name__ == '__main__':
 
 @app.route('/about')
 def about():

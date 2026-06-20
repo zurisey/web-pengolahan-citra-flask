@@ -10,18 +10,27 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_FILE = os.path.join(BASE_DIR, "trained_pca_model.pkl")
 
 def prepare_image(path):
-    img = cv2.imread(path)
-    if img is None:
-        raise ValueError(f"Gambar tidak dapat dibaca oleh OpenCV: {path}")
+    # Dummy fallback jika path berupa matriks dummy dari proses penanganan exception
+    if isinstance(path, np.ndarray):
+        img = path
+    else:
+        img = cv2.imread(path)
+        if img is None:
+            raise ValueError(f"Gambar tidak dapat dibaca oleh OpenCV: {path}")
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    if len(img.shape) == 3:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img
+        
+    # OPTIMASI: CLAHE (Contrast Limited Adaptive Histogram Equalization)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    gray = clahe.apply(gray)
     
-    # Menggunakan scaleFactor yang dinamis untuk wajah dengan ukuran bervariasi
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
     if len(faces) == 0:
-        # Jika cascade gagal deteksi wajar (karena angle/crop), fallback ke resize langsung
         face_resized = cv2.resize(gray, IMG_SIZE)
     else:
         faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
@@ -33,7 +42,21 @@ def prepare_image(path):
     n_points = 8 * radius
     face_lbp = local_binary_pattern(face_resized, n_points, radius, method='uniform')
     
-    return face_lbp.flatten().astype(float)
+    # OPTIMASI AKURASI: Spatial LBP Histograms
+    grid_x, grid_y = 8, 8
+    h_img, w_img = face_resized.shape
+    cell_h, cell_w = h_img // grid_y, w_img // grid_x
+    
+    histograms = []
+    for i in range(grid_y):
+        for j in range(grid_x):
+            cell = face_lbp[i*cell_h:(i+1)*cell_h, j*cell_w:(j+1)*cell_w]
+            hist, _ = np.histogram(cell.ravel(), bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
+            hist = hist.astype("float32")
+            hist /= (hist.sum() + 1e-7) 
+            histograms.append(hist)
+    
+    return np.concatenate(histograms)
 
 class FaceRecognitionSystem:
     def __init__(self):
@@ -56,9 +79,11 @@ class FaceRecognitionSystem:
                 gagal += 1
 
         if len(data_matrix) == 0:
-            # Fallback jika tidak ada data training: gunakan data dummy agar program tidak crash
             print("Peringatan: Folder training kosong. Membuat data fallback...")
-            data_matrix = [np.zeros(IMG_SIZE[0] * IMG_SIZE[1]) for _ in range(5)]
+            # Membuat ukuran array dummy yang presisi sesuai output histogram (64 kotak * 18 bins)
+            dummy_img = np.zeros((IMG_SIZE[1], IMG_SIZE[0], 3), dtype=np.uint8)
+            dummy_vector = prepare_image(dummy_img)
+            data_matrix = [dummy_vector for _ in range(5)]
 
         data_matrix = np.array(data_matrix)
         self.mean_face = np.mean(data_matrix, axis=0)
@@ -98,7 +123,6 @@ class FaceRecognitionSystem:
 
     def project(self, face_vector):
         if not self.is_trained:
-            # Otomatis self-train dengan sampel default jika crash saat diakses
             self.train([])
         centered = face_vector - self.mean_face
         weights = np.dot(self.eigenfaces, centered)
