@@ -17,7 +17,7 @@ Aplikasi web berbasis Python Flask yang menyediakan layanan pengolahan citra dig
 ## Instalasi dan Menjalankan Proyek
 
 1. Clone repositori ini:
-   git clone (https://github.com/zurisey/web-pengolahan-citra-flask.git)
+   git clone https://github.com/zurisey/web-pengolahan-citra-flask.git
 
 2. Masuk ke direktori aplikasi:
    cd web-pengolahan-citra-flask
